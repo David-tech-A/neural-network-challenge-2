@@ -134,9 +134,9 @@ Optimizer: `Adam`
 ---
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+Na.
 
 ---
 
 ## Author
-Developed by [Your Name](https://github.com/your-username).
+Developed by [David Melara](https://github.com/your-username).
