@@ -104,11 +104,11 @@ Optimizer: `Adam`
 ## How to Run
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/employee-attrition-model.git
+   git clone https://github.com/your-username/neural-network-challenge-2.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd employee-attrition-model
+   cd attrition3000.ipynb
    ```
 3. Install dependencies:
    ```bash
