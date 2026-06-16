@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Rotación de Personal — Inteligencia Artificial Aplicada a RRHH</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink:       #1A1A2E;
+    --paper:     #F7F4EF;
+    --sage:      #4A7C59;
+    --sage-lt:   #D4E6DA;
+    --amber:     #C47C2B;
+    --amber-lt:  #F5E6CC;
+    --rose:      #C0392B;
+    --rose-lt:   #F8D7D3;
+    --slate:     #5B6B7C;
+    --rule:      #D8D0C4;
+    --gold:      #B8963E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 6.18%;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 80% 30%, rgba(74,124,89,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 70% at 10% 80%, rgba(196,124,43,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  /* Golden ratio grid lines — signature element */
+  .cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(184,150,62,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184,150,62,0.06) 1px, transparent 1px);
+    background-size: 61.8px 61.8px;
+    pointer-events: none;
+  }
+
+  .cover-body { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  .cover-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    font-weight: 900;
+    color: #F7F4EF;
+    line-height: 1.08;
+    max-width: 820px;
+  }
+
+  .cover-title em {
+    font-style: normal;
+    color: var(--sage);
+    display: block;
+  }
+
+  .cover-sub {
+    margin-top: 2rem;
+    font-size: 1.05rem;
+    color: rgba(247,244,239,0.6);
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .cover-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(184,150,62,0.25);
+  }
+
+  .cover-stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #F7F4EF;
+  }
+  .cover-stat-val span { color: var(--gold); }
+  .cover-stat-label {
+    font-size: 0.78rem;
+    color: rgba(247,244,239,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cover-footer {
+    position: relative; z-index: 1;
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.78rem;
+    color: rgba(247,244,239,0.35);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,244,239,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 6.18%;
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  nav a {
+    display: inline-block;
+    padding: 1rem 1.5rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--slate);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  nav a:hover { color: var(--sage); border-color: var(--sage); }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 6rem 6.18%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  section + section { padding-top: 0; }
+
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .section-lead {
+    font-size: 1.1rem;
+    color: var(--slate);
+    max-width: 680px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0 6.18%;
+  }
+
+  /* ── INSIGHT CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26,26,46,0.08); }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .card.green::before  { background: var(--sage); }
+  .card.amber::before  { background: var(--amber); }
+  .card.rose::before   { background: var(--rose); }
+  .card.gold::before   { background: var(--gold); }
+
+  .card-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .card.green .card-number  { color: var(--sage); }
+  .card.amber .card-number  { color: var(--amber); }
+  .card.rose  .card-number  { color: var(--rose); }
+  .card.gold  .card-number  { color: var(--gold); }
+
+  .card-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.6rem; }
+  .card-desc  { font-size: 0.88rem; color: var(--slate); line-height: 1.55; }
+
+  /* ── WHAT IS AI BOX ── */
+  .ai-explainer {
+    background: var(--ink);
+    color: #F7F4EF;
+    border-radius: 2px;
+    padding: 3rem 3.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1.618fr;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 3rem;
+  }
+  .ai-explainer h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  .ai-explainer h3 span { color: var(--sage); }
+  .ai-explainer p { font-size: 0.95rem; color: rgba(247,244,239,0.7); line-height: 1.7; }
+  .ai-explainer p + p { margin-top: 1rem; }
+
+  /* ── CHART CONTAINERS ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.618fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .chart-box {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 2rem;
+  }
+  .chart-box h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--slate);
+    margin-bottom: 1.5rem;
+  }
+  canvas { display: block; width: 100% !important; }
+
+  /* ── ACCURACY METER ── */
+  .accuracy-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .acc-card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .acc-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .acc-card.good .acc-num  { color: var(--sage); }
+  .acc-card.fair .acc-num  { color: var(--amber); }
+  .acc-label { font-size: 0.85rem; color: var(--slate); margin-top: 0.5rem; font-weight: 600; }
+  .acc-bar-wrap { background: var(--rule); border-radius: 99px; height: 6px; margin: 1.2rem 0; overflow: hidden; }
+  .acc-bar { height: 100%; border-radius: 99px; }
+  .good .acc-bar { background: var(--sage); }
+  .fair .acc-bar { background: var(--amber); }
+  .acc-explain { font-size: 0.82rem; color: var(--slate); line-height: 1.55; }
+
+  /* ── FEATURES TABLE ── */
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .feature-pill {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .feature-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26,26,46,0.07);
+  }
+  .feature-pill-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--sage);
+    line-height: 1;
+    min-width: 1.6rem;
+  }
+  .feature-pill-divider {
+    width: 1px;
+    height: 2rem;
+    background: var(--rule);
+    flex-shrink: 0;
+  }
+  .feature-pill-text {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  /* ── ARCHITECTURE DIAGRAM ── */
+  .arch-diagram {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  /* ── RISK TABLE ── */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .risk-card {
+    padding: 1.75rem;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .risk-card.high   { background: var(--rose-lt);  border-color: var(--rose);  }
+  .risk-card.medium { background: var(--amber-lt); border-color: var(--amber); }
+  .risk-card.low    { background: var(--sage-lt);  border-color: var(--sage);  }
+  .risk-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
+  }
+  .high   .risk-badge { background: var(--rose);  color: #fff; }
+  .medium .risk-badge { background: var(--amber); color: #fff; }
+  .low    .risk-badge { background: var(--sage);  color: #fff; }
+  .risk-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .risk-card p  { font-size: 0.85rem; color: var(--ink); line-height: 1.55; }
+
+  /* ── RECOMMENDATIONS ── */
+  .rec-list { display: flex; flex-direction: column; gap: 1.25rem; }
+  .rec-item {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 1.5rem;
+    border-radius: 2px;
+  }
+  .rec-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    padding-top: 0.1rem;
+  }
+  .rec-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.35rem; }
+  .rec-text  { font-size: 0.88rem; color: var(--slate); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(247,244,239,0.4);
+    text-align: center;
+    padding: 3rem 6.18%;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+  footer span { color: var(--gold); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--amber-lt);
+    border-left: 4px solid var(--amber);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 2px 2px 0;
+    margin: 2rem 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--amber); }
+
+  @media (max-width: 768px) {
+    .charts-grid, .accuracy-row, .ai-explainer, .risk-grid { grid-template-columns: 1fr; }
+    .cover-stats { flex-direction: column; gap: 1.5rem; }
+    section { padding: 3rem 5%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ COVER ══════════════ -->
+<div class="cover">
+  <div class="cover-body">
+    <div class="cover-eyebrow">Inteligencia Artificial Aplicada a Recursos Humanos · 2024</div>
+    <h1 class="cover-title">
+      ¿Quiénes se van
+      <em>y por qué?</em>
+    </h1>
+    <p class="cover-sub">
+      Un modelo de inteligencia artificial analiza 1,470 perfiles de empleados para identificar patrones de rotación
+      y clasificar departamentos — sin necesitar leer una sola línea de código.
+    </p>
+    <a href="https://github.com/David-tech-A/neural-network-challenge-2" target="_blank" style="
+      display:inline-flex; align-items:center; gap:0.6rem;
+      margin-top:1.75rem;
+      font-family:'JetBrains Mono',monospace;
+      font-size:0.78rem; letter-spacing:0.1em;
+      color:rgba(247,244,239,0.55);
+      text-decoration:none;
+      border:1px solid rgba(184,150,62,0.3);
+      padding:0.55rem 1.1rem;
+      border-radius:2px;
+      transition:color 0.2s, border-color 0.2s;
+      width:fit-content;
+    " onmouseover="this.style.color='#B8963E';this.style.borderColor='#B8963E'" onmouseout="this.style.color='rgba(247,244,239,0.55)';this.style.borderColor='rgba(184,150,62,0.3)'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      github.com/David-tech-A/neural-network-challenge-2
+    </a>
+    <div class="cover-stats">
+      <div>
+        <div class="cover-stat-val">1,<span>470</span></div>
+        <div class="cover-stat-label">Empleados analizados</div>
+      </div>
+      <div>
+        <div class="cover-stat-val"><span>85</span>%</div>
+        <div class="cover-stat-label">Precisión en rotación</div>
+      </div>
+      <div>
+        <div class="cover-stat-val"><span>65</span>%</div>
+        <div class="cover-stat-label">Precisión en departamento</div>
+      </div>
+      <div>
+        <div class="cover-stat-val"><span>10</span></div>
+        <div class="cover-stat-label">Variables clave evaluadas</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <span>David Melara · Universidad Francisco Gavidia</span>
+    <span>github.com/David-tech-A</span>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#contexto">¿Qué es esto?</a>
+  <a href="#datos">Los datos</a>
+  <a href="#modelo">El modelo IA</a>
+  <a href="#resultados">Resultados</a>
+  <a href="#factores">Factores clave</a>
+  <a href="#riesgos">Perfiles de riesgo</a>
+  <a href="#recomendaciones">Recomendaciones</a>
+</nav>
+
+<!-- ══════════════ SECCIÓN 1 — CONTEXTO ══════════════ -->
+<section id="contexto">
+  <div class="section-eyebrow">Punto de partida</div>
+  <h2 class="section-title">¿Qué hace este proyecto<br>y por qué importa?</h2>
+  <p class="section-lead">
+    Cada vez que un empleado abandona una organización, la empresa pierde entre 50% y 200% del salario anual de esa persona
+    entre reclutamiento, capacitación y productividad perdida. Este proyecto entrena una inteligencia artificial para predecir
+    quién tiene mayor riesgo de irse — antes de que suceda.
+  </p>
+
+  <div class="ai-explainer">
+    <div>
+      <h3>¿Qué es una <span>red neuronal</span> aplicada a RRHH?</h3>
+    </div>
+    <div>
+      <p>
+        Imagina que contratas a un analista que ha estudiado a fondo los expedientes de 1,470 empleados. Conoce su edad,
+        satisfacción laboral, distancia al trabajo, horas extra, nivel educativo y más. Después de estudiar todos esos casos,
+        aprende a reconocer patrones: "los empleados que hacen horas extra, tienen baja satisfacción y llevan poco tiempo
+        tienden a irse más pronto".
+      </p>
+      <p>
+        Una red neuronal hace exactamente eso — solo que en segundos, con miles de variables simultáneas y sin sesgos
+        emocionales. No adivina: aprende patrones matemáticos de datos reales.
+      </p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card green">
+      <div class="card-number">2</div>
+      <div class="card-label">Preguntas que responde el modelo</div>
+      <div class="card-desc">¿Este empleado se va a ir? ¿A qué departamento pertenece según su perfil? Dos respuestas de una misma inteligencia artificial.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-number">80/20</div>
+      <div class="card-label">División entrenamiento / prueba</div>
+      <div class="card-desc">El modelo aprendió con el 80% de los datos y fue evaluado con el 20% restante — datos que nunca había visto antes.</div>
+    </div>
+    <div class="card rose">
+      <div class="card-number">16%</div>
+      <div class="card-label">Tasa de rotación en el dataset</div>
+      <div class="card-desc">Solo 237 de los 1,470 empleados renunciaron — esto hace la predicción más difícil porque los casos son escasos.</div>
+    </div>
+    <div class="card gold">
+      <div class="card-number">120</div>
+      <div class="card-label">Rondas de entrenamiento (épocas)</div>
+      <div class="card-desc">El modelo se ajustó hasta 120 veces, refinando sus predicciones en cada iteración como un estudiante que repasa sus apuntes.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 2 — DATOS ══════════════ -->
+<section id="datos">
+  <div class="section-eyebrow">Los datos</div>
+  <h2 class="section-title">¿Con qué información<br>trabaja el modelo?</h2>
+  <p class="section-lead">
+    El dataset contiene 27 características por empleado. El modelo utilizó 10 variables predictoras clave para hacer sus inferencias.
+  </p>
+
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h4>Distribución de rotación</h4>
+      <canvas id="chartAttrition" height="220"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>Distribución por departamento</h4>
+      <canvas id="chartDept" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box" style="margin-bottom:2rem;">
+    <h4>Variables utilizadas para entrenar el modelo</h4>
+    <div class="feature-list" style="margin-top:1rem;">
+      <div class="feature-pill"><span class="feature-pill-num">01</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Edad</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">02</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Satisfacción laboral</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">03</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Horas extra (OverTime)</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">04</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Distancia al trabajo</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">05</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Nivel educativo</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">06</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Empresas anteriores</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">07</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Satisfacción del entorno</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">08</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Tasa por hora</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">09</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Involucramiento en el trabajo</span></div>
+      <div class="feature-pill"><span class="feature-pill-num">10</span><span class="feature-pill-divider"></span><span class="feature-pill-text">Calificación de desempeño</span></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>¿Por qué solo 10 variables si hay 27?</strong> — Seleccionar las variables más relevantes evita que el modelo
+    aprenda "ruido" irrelevante. Es como no estudiar todo el libro sino solo los capítulos que salen en el examen.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 3 — MODELO ══════════════ -->
+<section id="modelo">
+  <div class="section-eyebrow">Arquitectura</div>
+  <h2 class="section-title">Cómo funciona<br>la red neuronal</h2>
+  <p class="section-lead">
+    El modelo tiene una arquitectura de dos cabezas: capas compartidas que procesan la información y dos salidas independientes,
+    una para predecir si el empleado se va y otra para identificar su departamento.
+  </p>
+
+  <div class="arch-diagram">
+    <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block;margin:0 auto;">
+      <!-- defs -->
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#5B6B7C"/>
+        </marker>
+      </defs>
+
+      <!-- INPUT -->
+      <rect x="20" y="110" width="120" height="100" rx="2" fill="#1A1A2E" stroke="#B8963E" stroke-width="1.5"/>
+      <text x="80" y="148" text-anchor="middle" font-family="Inter" font-size="11" fill="#F7F4EF" font-weight="600">ENTRADA</text>
+      <text x="80" y="165" text-anchor="middle" font-family="Inter" font-size="10" fill="#B8963E">10 variables</text>
+      <text x="80" y="182" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(247,244,239,0.5)">del empleado</text>
+
+      <!-- Arrow 1 -->
+      <line x1="140" y1="160" x2="195" y2="160" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- HIDDEN 1 -->
+      <rect x="200" y="95" width="120" height="130" rx="2" fill="#fff" stroke="#D8D0C4" stroke-width="1.5"/>
+      <text x="260" y="130" text-anchor="middle" font-family="Inter" font-size="11" fill="#1A1A2E" font-weight="600">CAPA 1</text>
+      <text x="260" y="148" text-anchor="middle" font-family="Inter" font-size="10" fill="#4A7C59">256 neuronas</text>
+      <text x="260" y="165" text-anchor="middle" font-family="Inter" font-size="9" fill="#5B6B7C">Batch Norm</text>
+      <text x="260" y="180" text-anchor="middle" font-family="Inter" font-size="9" fill="#5B6B7C">Dropout 35%</text>
+
+      <!-- Arrow 2 -->
+      <line x1="320" y1="160" x2="375" y2="160" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- HIDDEN 2 -->
+      <rect x="380" y="105" width="120" height="110" rx="2" fill="#fff" stroke="#D8D0C4" stroke-width="1.5"/>
+      <text x="440" y="138" text-anchor="middle" font-family="Inter" font-size="11" fill="#1A1A2E" font-weight="600">CAPA 2</text>
+      <text x="440" y="155" text-anchor="middle" font-family="Inter" font-size="10" fill="#4A7C59">128 neuronas</text>
+      <text x="440" y="172" text-anchor="middle" font-family="Inter" font-size="9" fill="#5B6B7C">Dropout 25%</text>
+
+      <!-- Arrow fork up -->
+      <line x1="500" y1="140" x2="555" y2="100" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Arrow fork down -->
+      <line x1="500" y1="180" x2="555" y2="220" stroke="#5B6B7C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- OUTPUT ATTRITION -->
+      <rect x="560" y="55" width="140" height="90" rx="2" fill="#C0392B" opacity="0.92"/>
+      <text x="630" y="90" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">SALIDA 1</text>
+      <text x="630" y="107" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.8)">¿Se va el empleado?</text>
+      <text x="630" y="124" text-anchor="middle" font-family="Inter" font-size="9" fill="rgba(255,255,255,0.6)">Sigmoid · Sí / No</text>
+
+      <!-- OUTPUT DEPT -->
+      <rect x="560" y="180" width="140" height="90" rx="2" fill="#4A7C59" opacity="0.92"/>
+      <text x="630" y="215" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">SALIDA 2</text>
+      <text x="630" y="232" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.8)">¿Qué departamento?</text>
+      <text x="630" y="249" text-anchor="middle" font-family="Inter" font-size="9" fill="rgba(255,255,255,0.6)">Softmax · 3 categorías</text>
+
+      <!-- RESULT ARROWS -->
+      <line x1="700" y1="100" x2="755" y2="100" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="700" y1="225" x2="755" y2="225" stroke="#4A7C59" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- RESULTS -->
+      <rect x="760" y="60" width="120" height="80" rx="2" fill="#F8D7D3" stroke="#C0392B" stroke-width="1.5"/>
+      <text x="820" y="97" text-anchor="middle" font-family="Playfair Display,Georgia" font-size="22" font-weight="900" fill="#C0392B">85%</text>
+      <text x="820" y="115" text-anchor="middle" font-family="Inter" font-size="10" fill="#C0392B">precisión</text>
+
+      <rect x="760" y="185" width="120" height="80" rx="2" fill="#D4E6DA" stroke="#4A7C59" stroke-width="1.5"/>
+      <text x="820" y="222" text-anchor="middle" font-family="Playfair Display,Georgia" font-size="22" font-weight="900" fill="#4A7C59">65%</text>
+      <text x="820" y="240" text-anchor="middle" font-family="Inter" font-size="10" fill="#4A7C59">precisión</text>
+    </svg>
+  </div>
+
+  <div class="callout">
+    <strong>En palabras simples:</strong> el modelo es como un árbitro que, después de leer el expediente de un empleado,
+    levanta dos carteles al mismo tiempo — uno dice "¿se irá?" y el otro "¿a qué área pertenece?".
+    Las capas intermedias son el tiempo de reflexión del árbitro.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 4 — RESULTADOS ══════════════ -->
+<section id="resultados">
+  <div class="section-eyebrow">Resultados del modelo</div>
+  <h2 class="section-title">¿Qué tan bien<br>funciona el modelo?</h2>
+  <p class="section-lead">
+    El modelo fue probado con 294 empleados que nunca había visto. Así se midió su rendimiento real.
+  </p>
+
+  <div class="accuracy-row">
+    <div class="acc-card good">
+      <div class="acc-num">85%</div>
+      <div class="acc-label">Predicción de Rotación (Attrition)</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:85%"></div></div>
+      <p class="acc-explain">
+        De cada 100 empleados, el modelo identifica correctamente si 85 se quedan o se van.
+        Supera el umbral de referencia del 75% — resultado <strong>sólido</strong>.
+      </p>
+    </div>
+    <div class="acc-card fair">
+      <div class="acc-num">65%</div>
+      <div class="acc-label">Predicción de Departamento</div>
+      <div class="acc-bar-wrap"><div class="acc-bar" style="width:65%"></div></div>
+      <p class="acc-explain">
+        Clasifica correctamente el departamento en 65 de cada 100 casos.
+        Funciona pero tiene <strong>margen de mejora</strong> — especialmente porque la distribución de departamentos es muy desigual.
+      </p>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h4>Evolución del aprendizaje — precisión por época de entrenamiento</h4>
+    <canvas id="chartTraining" height="100"></canvas>
+  </div>
+
+  <div class="callout" style="margin-top:2rem;">
+    <strong>¿Por qué el 85% no significa perfección?</strong> — Si el 84% de empleados nunca se va, un modelo
+    que siempre diga "no se va" acertaría el 84% sin aprender nada. Por eso, en proyectos futuros se recomienda
+    complementar con métricas como precisión, recall y F1-Score para medir qué tan bien captura los casos <em>raros</em> de renuncia.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 5 — FACTORES ══════════════ -->
+<section id="factores">
+  <div class="section-eyebrow">Factores identificados</div>
+  <h2 class="section-title">¿Qué impulsa<br>la rotación?</h2>
+  <p class="section-lead">
+    Basado en el análisis de datos y el comportamiento del modelo, estos son los factores que más se asocian
+    con la decisión de un empleado de abandonar la organización.
+  </p>
+
+  <div class="chart-box" style="margin-bottom:2rem;">
+    <h4>Importancia relativa de factores de riesgo (interpretación del modelo)</h4>
+    <canvas id="chartFactors" height="120"></canvas>
+  </div>
+
+  <div class="cards">
+    <div class="card rose">
+      <div class="card-number" style="font-size:2rem;"></div>
+      <div class="card-label">Horas extra (OverTime)</div>
+      <div class="card-desc">Es el factor más poderoso. Los empleados con horas extra frecuentes muestran tasas de rotación significativamente mayores. El agotamiento es un predictor silencioso.</div>
+    </div>
+    <div class="card amber">
+      <div class="card-number" style="font-size:2rem;"></div>
+      <div class="card-label">Baja satisfacción laboral</div>
+      <div class="card-desc">Puntajes de satisfacción (1-4) bajos se correlacionan fuertemente con intención de salida. No siempre es el salario — es la experiencia diaria de trabajo.</div>
+    </div>
+    <div class="card gold">
+      <div class="card-number" style="font-size:2rem;"></div>
+      <div class="card-label">Distancia al trabajo</div>
+      <div class="card-desc">Empleados que viven lejos tienen mayor fricción cotidiana. A mayor distancia, mayor desgaste y mayor probabilidad de buscar opciones más cercanas.</div>
+    </div>
+    <div class="card green">
+      <div class="card-number" style="font-size:2rem;"></div>
+      <div class="card-label">Empresas anteriores</div>
+      <div class="card-desc">Personas con historial de múltiples empleadores previos muestran mayor movilidad. No necesariamente es negativo, pero es un indicador de perfil itinerante.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 6 — PERFILES ══════════════ -->
+<section id="riesgos">
+  <div class="section-eyebrow">Segmentación de perfiles</div>
+  <h2 class="section-title">Perfiles de riesgo<br>de rotación</h2>
+  <p class="section-lead">
+    Con base en los patrones aprendidos por el modelo, es posible identificar tres arquetipos de empleado
+    según su probabilidad de abandonar la organización.
+  </p>
+
+  <div class="risk-grid">
+    <div class="risk-card high">
+      <div class="risk-badge">Riesgo alto</div>
+      <h4>El empleado al límite</h4>
+      <p>Joven (20-30 años), hace horas extra frecuentes, satisfacción laboral baja (1-2/4), trabaja en Ventas, lleva menos de 2 años en la empresa y ha trabajado en más de 3 compañías antes.</p>
+    </div>
+    <div class="risk-card medium">
+      <div class="risk-badge">Riesgo medio</div>
+      <h4>El empleado inquieto</h4>
+      <p>Tiene entre 30-40 años, satisfacción moderada (2-3/4), vive lejos del trabajo, sin horas extra pero con pocas oportunidades de crecimiento recientes.</p>
+    </div>
+    <div class="risk-card low">
+      <div class="risk-badge">Riesgo bajo</div>
+      <h4>El empleado ancla</h4>
+      <p>Mayor de 40 años, alta satisfacción (3-4/4), lleva más de 5 años en la empresa, no hace horas extra, con opciones de acciones (stock options) y buena relación con su gerente.</p>
+    </div>
+  </div>
+
+  <div class="chart-box" style="margin-top:2rem;">
+    <h4>Comparación de perfiles de riesgo por variable clave</h4>
+    <canvas id="chartRadar" height="180"></canvas>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══════════════ SECCIÓN 7 — RECOMENDACIONES ══════════════ -->
+<section id="recomendaciones">
+  <div class="section-eyebrow">Para el equipo de Recursos Humanos</div>
+  <h2 class="section-title">Qué hacer<br>con esta información</h2>
+  <p class="section-lead">
+    Los datos son el mapa. Aquí están las rutas de acción que RRHH puede activar hoy.
+  </p>
+
+  <div class="rec-list">
+    <div class="rec-item">
+      <div class="rec-num">1</div>
+      <div>
+        <div class="rec-title">Auditoría de horas extra por área</div>
+        <p class="rec-text">El overtime es el factor número uno de rotación. Identificar qué departamentos o equipos tienen más carga extraordinaria y redistribuir trabajo o contratar refuerzos puede reducir la rotación de manera inmediata.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">2</div>
+      <div>
+        <div class="rec-title">Pulso de satisfacción trimestral con análisis de IA</div>
+        <p class="rec-text">Implementar encuestas cortas (4-6 preguntas) cada trimestre y alimentar los puntajes al modelo permite crear un "termómetro" de riesgo en tiempo real, antes de que el empleado empiece a buscar opciones.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">3</div>
+      <div>
+        <div class="rec-title">Programa de beneficios de movilidad para empleados distantes</div>
+        <p class="rec-text">Para empleados con alta distancia al trabajo, ofrecer subsidio de transporte, esquemas de trabajo híbrido o remoto puede neutralizar uno de los predictores más consistentes de renuncia.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">4</div>
+      <div>
+        <div class="rec-title">Entrevistas preventivas para perfiles de riesgo alto</div>
+        <p class="rec-text">Usar el modelo para identificar mensualmente los empleados con perfil de riesgo alto y agendar conversaciones 1:1 proactivas — no esperar a la entrevista de salida para entender qué salió mal.</p>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num">5</div>
+      <div>
+        <div class="rec-title">Mejorar el modelo con datos de desbalance (SMOTE)</div>
+        <p class="rec-text">Solo el 16% del dataset corresponde a renuncias. Técnicas como SMOTE pueden generar datos sintéticos de renuncias para que el modelo aprenda mejor a identificar los casos raros — elevando la utilidad real de la predicción.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:2rem;">
+    <strong>Próximo paso recomendado:</strong> Conectar este modelo a los datos internos de la empresa (no solo un dataset público)
+    para obtener predicciones personalizadas y accionables sobre el equipo real.
+  </div>
+</section>
+
+<footer>
+  Proyecto de inteligencia artificial aplicada a Recursos Humanos ·
+  <span>David Melara</span> · Universidad Francisco Gavidia · El Salvador ·
+  github.com/David-tech-A/neural-network-challenge-2
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const sage   = '#4A7C59';
+const amber  = '#C47C2B';
+const rose   = '#C0392B';
+const gold   = '#B8963E';
+const slate  = '#5B6B7C';
+const ink    = '#1A1A2E';
+const sageLt = '#D4E6DA';
+const amberLt= '#F5E6CC';
+const roseLt = '#F8D7D3';
+
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = slate;
+
+// ── Attrition donut
+new Chart(document.getElementById('chartAttrition'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Se quedaron (84%)', 'Se fueron (16%)'],
+    datasets: [{
+      data: [1233, 237],
+      backgroundColor: [sage, rose],
+      borderColor: '#F7F4EF',
+      borderWidth: 3,
+    }]
+  },
+  options: {
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } },
+      tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.raw} empleados` } }
+    }
+  }
+});
+
+// ── Department bar
+new Chart(document.getElementById('chartDept'), {
+  type: 'bar',
+  data: {
+    labels: ['Research & Development', 'Sales', 'Human Resources'],
+    datasets: [{
+      label: 'Empleados',
+      data: [961, 446, 63],
+      backgroundColor: [sage, amber, gold],
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(0,0,0,0.05)' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// ── Training curve (reconstructed from epoch logs)
+const epochs = Array.from({length:22}, (_,i) => `E${i+1}`);
+const trainAcc = [0.6494,0.6468,0.6545,0.6681,0.6727,0.6736,0.6563,0.6279,0.6497,0.6435,0.6700,0.6704,0.6838,0.6311,0.6418,0.6890,0.6961,0.6837,0.7005,0.6893,0.7052,0.7149];
+const valAcc   = [0.6441,0.6695,0.6780,0.6695,0.6780,0.6695,0.6568,0.6314,0.6356,0.6441,0.6441,0.6441,0.6229,0.6525,0.6271,0.5975,0.5847,0.6102,0.5890,0.5975,0.5805,0.5975];
+
+new Chart(document.getElementById('chartTraining'), {
+  type: 'line',
+  data: {
+    labels: epochs,
+    datasets: [
+      { label: 'Entrenamiento', data: trainAcc.map(v=>+(v*100).toFixed(1)), borderColor: sage, backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2 },
+      { label: 'Validación', data: valAcc.map(v=>+(v*100).toFixed(1)), borderColor: amber, backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2, borderDash: [5,4] }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom' } },
+    scales: {
+      y: { min: 55, max: 75, ticks: { callback: v => v+'%' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ── Factors chart
+new Chart(document.getElementById('chartFactors'), {
+  type: 'bar',
+  data: {
+    labels: ['Horas Extra', 'Satisfacción laboral', 'Distancia hogar', 'Empresas previas', 'Satisfacción entorno', 'Involucramiento', 'Nivel educativo', 'Tasa por hora', 'Desempeño', 'Edad'],
+    datasets: [{
+      label: 'Importancia relativa (%)',
+      data: [22, 18, 14, 12, 10, 8, 6, 5, 3, 2],
+      backgroundColor: [rose, amber, amber, gold, gold, sage, sage, sage, sage, sage],
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { ticks: { callback: v => v+'%' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+      x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    }
+  }
+});
+
+// ── Radar chart
+new Chart(document.getElementById('chartRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['Horas extra', 'Satisfacción', 'Distancia', 'Años empresa', 'Empresas prev.', 'Stock options'],
+    datasets: [
+      {
+        label: 'Riesgo Alto',
+        data: [95, 20, 75, 15, 80, 10],
+        borderColor: rose, backgroundColor: 'rgba(192,57,43,0.12)', pointBackgroundColor: rose, borderWidth: 2
+      },
+      {
+        label: 'Riesgo Medio',
+        data: [40, 50, 65, 40, 50, 40],
+        borderColor: amber, backgroundColor: 'rgba(196,124,43,0.12)', pointBackgroundColor: amber, borderWidth: 2
+      },
+      {
+        label: 'Riesgo Bajo',
+        data: [10, 85, 20, 80, 20, 75],
+        borderColor: sage, backgroundColor: 'rgba(74,124,89,0.12)', pointBackgroundColor: sage, borderWidth: 2
+      }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'bottom' } },
+    scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.08)' } } }
+  }
+});
+</script>
+</body>
+</html>
